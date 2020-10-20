@@ -1,6 +1,6 @@
 # ---------------------- Builder image ----------------------
 
-FROM node:12-slim AS builder
+FROM node:10.20.1-alpine3.11 AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ RUN rm -rf src/
 
 # ---------------------- Runtime image ----------------------
 
-FROM node:12-slim
+FROM node:10.20.1-alpine3.11
 
 WORKDIR /app
 
