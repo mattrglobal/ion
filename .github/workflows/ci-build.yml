@@ -13,8 +13,21 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
-      - name: Check out the repo
+      - name: Check out the ${{ github.event.inputs.tag }} tag to build
         uses: actions/checkout@v2
+        with:
+          ref: refs/tags/${{ github.event.inputs.tag }}
+
+      - name: Check out the ${{ github.ref }} branch for Dockerfile
+        uses: actions/checkout@v2
+        with:
+          ref: ${{github.ref}}
+          path: main_branch
+
+      - name: Copy Dockerfile from ${{github.ref}} to ${{ github.event.inputs.tag }}
+        run: |
+          cp ${{ github. workspace }}/main_branch/Dockerfile Dockerfile
+          rm -rf ${{ github. workspace }}/main_branch
 
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
