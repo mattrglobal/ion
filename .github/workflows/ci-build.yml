@@ -13,18 +13,23 @@ jobs:
     runs-on: ubuntu-18.04
 
     steps:
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+        id: extract_branch
+
       - name: Check out the ${{ github.event.inputs.tag }} tag to build
         uses: actions/checkout@v2
         with:
           ref: refs/tags/${{ github.event.inputs.tag }}
 
-      - name: Check out the ${{ github.ref }} branch for Dockerfile
+      - name: Check out the ${{ steps.extract_branch.outputs.branch }} branch for Dockerfile
         uses: actions/checkout@v2
         with:
           ref: ${{github.ref}}
           path: main_branch
 
-      - name: Copy Dockerfile from ${{github.ref}} to ${{ github.event.inputs.tag }}
+      - name: Copy Dockerfile from ${{ steps.extract_branch.outputs.branch }} branch to ${{ github.event.inputs.tag }}
         run: |
           cp ${{ github. workspace }}/main_branch/Dockerfile Dockerfile
           rm -rf ${{ github. workspace }}/main_branch
