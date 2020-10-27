@@ -29,7 +29,7 @@ jobs:
           cp ${{ github. workspace }}/main_branch/Dockerfile Dockerfile
           rm -rf ${{ github. workspace }}/main_branch
 
-      - name: Push to Docker Hub
+      - name: Build Docker image ${{ github.event.inputs.tag }} and Push to DockerHub
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
