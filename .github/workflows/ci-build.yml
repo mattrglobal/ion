@@ -18,13 +18,13 @@ jobs:
         with:
           ref: refs/tags/${{ github.event.inputs.tag }}
 
-      - name: Check out the ${GITHUB_REF#refs/*/} branch for Dockerfile
+      - name: Check out the ${{ github.ref }} branch for Dockerfile
         uses: actions/checkout@v2
         with:
           ref: ${{github.ref}}
           path: main_branch
 
-      - name: Copy Dockerfile from ${GITHUB_REF#refs/*/} to ${{ github.event.inputs.tag }}
+      - name: Copy Dockerfile from ${{github.ref}} to ${{ github.event.inputs.tag }}
         run: |
           cp ${{ github. workspace }}/main_branch/Dockerfile Dockerfile
           rm -rf ${{ github. workspace }}/main_branch
