@@ -49,6 +49,7 @@ jobs:
       - name: Build and push docker image ${{ secrets.DOCKER_REPO }}:${{ github.event.inputs.tag }}
         uses: docker/build-push-action@v2
         with:
+          platforms: linux/amd64
           push: true
           tags: |
             ${{ secrets.DOCKER_REPO }}:${{ github.event.inputs.tag }}
