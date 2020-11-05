@@ -51,6 +51,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64
+          context: .
+          file: ./Dockerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_REPO }}:${{ github.event.inputs.tag }}
