@@ -8,9 +8,24 @@ import {
   SidetreeBitcoinProcessor,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
-import { collectDefaultMetrics, register } from 'prom-client';
+import { collectDefaultMetrics, register, Counter } from 'prom-client';
 
 collectDefaultMetrics();
+
+// Customized Http Metrics
+const httpMetricsLabelNames = ['method', 'path', 'status_code'];
+const totalHttpRequestStatusCount = new Counter({
+  name: 'nodejs_http_status_code_count',
+  help: 'total status code counter',
+  labelNames: httpMetricsLabelNames
+});
+
+function initMetrics4EachRoute(layer: Router.Layer) {
+  layer.stack.unshift(async (ctx, next) => {
+    await next();
+    totalHttpRequestStatusCount.labels(ctx.method, layer.path, ctx.response.status.toString()).inc();
+  });
+}
 
 /** Bitcoin service configuration parameters */
 interface IBitcoinServiceConifg extends ISidetreeBitcoinConfig {
@@ -148,6 +163,8 @@ router.get('/writerlock', async (ctx, _next) => {
   const requestHandler = async () => blockchainService.getActiveValueTimeLockForThisNode();
   await handleRequestAndSetKoaResponse(requestHandler, ctx.response);
 });
+
+router.stack.forEach(initMetrics4EachRoute);
 
 app.use(router.routes())
   .use(router.allowedMethods());
