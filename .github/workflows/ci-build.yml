@@ -33,6 +33,7 @@ jobs:
         run: |
           cp ${{ github. workspace }}/main_branch/Dockerfile Dockerfile
           rm -rf ${{ github. workspace }}/main_branch
+          cat package.json
 
       # GitHub Action to build and push Docker images with Buildx https://github.com/marketplace/actions/build-and-push-docker-images
       - name: Set up QEMU
