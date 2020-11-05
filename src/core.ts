@@ -10,6 +10,24 @@ import {
   SidetreeResponseModel,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
+import { collectDefaultMetrics, register, Counter } from 'prom-client';
+
+collectDefaultMetrics();
+
+// Customized Http Metrics
+const httpMetricsLabelNames = ['method', 'path', 'status_code'];
+const totalHttpRequestStatusCount = new Counter({
+  name: 'nodejs_http_status_code_count',
+  help: 'total status code counter',
+  labelNames: httpMetricsLabelNames
+});
+
+function initMetrics4EachRoute(layer: Router.Layer) {
+  layer.stack.unshift(async (ctx, next) => {
+    await next();
+    totalHttpRequestStatusCount.labels(ctx.method, layer.path, ctx.response.status.toString()).inc();
+  });
+}
 
 /** Configuration used by this server. */
 interface ServerConfig extends SidetreeConfig {
@@ -52,6 +70,12 @@ app.use(async (ctx, next) => {
 });
 
 const router = new Router();
+
+router.get('/metrics', (ctx) => {
+  ctx.headers['content-type'] = register.contentType;
+  ctx.body = register.metrics();
+});
+
 router.post('/operations', async (ctx, _next) => {
   const response = await sidetreeCore.handleOperationRequest(ctx.body);
   setKoaResponse(response, ctx.response);
@@ -69,6 +93,8 @@ router.get(`${resolvePath}:did`, async (ctx, _next) => {
   const response = await sidetreeCore.handleResolveRequest(didOrDidDocument);
   setKoaResponse(response, ctx.response);
 });
+
+router.stack.forEach(initMetrics4EachRoute);
 
 app.use(router.routes())
    .use(router.allowedMethods());
