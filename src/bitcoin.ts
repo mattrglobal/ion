@@ -8,6 +8,7 @@ import {
   SidetreeBitcoinProcessor,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
+import { register } from 'prom-client';
 
 /** Bitcoin service configuration parameters */
 interface IBitcoinServiceConifg extends ISidetreeBitcoinConfig {
@@ -83,6 +84,11 @@ app.use(async (ctx, next) => {
 });
 
 const router = new Router();
+
+router.get('/metrics', (ctx) => {
+  ctx.headers['content-type'] = register.contentType;
+  ctx.body = register.metrics();
+});
 
 router.get('/transactions', async (ctx, _next) => {
   const params = querystring.parse(ctx.querystring);

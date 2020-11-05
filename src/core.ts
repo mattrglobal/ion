@@ -10,6 +10,7 @@ import {
   SidetreeResponseModel,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
+import { register } from 'prom-client';
 
 /** Configuration used by this server. */
 interface ServerConfig extends SidetreeConfig {
@@ -52,6 +53,12 @@ app.use(async (ctx, next) => {
 });
 
 const router = new Router();
+
+router.get('/metrics', (ctx) => {
+  ctx.headers['content-type'] = register.contentType;
+  ctx.body = register.metrics();
+});
+
 router.post('/operations', async (ctx, _next) => {
   const response = await sidetreeCore.handleOperationRequest(ctx.body);
   setKoaResponse(response, ctx.response);
