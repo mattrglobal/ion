@@ -10,7 +10,9 @@ import {
   SidetreeResponseModel,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
-import { register } from 'prom-client';
+import { collectDefaultMetrics, register } from 'prom-client';
+
+collectDefaultMetrics();
 
 /** Configuration used by this server. */
 interface ServerConfig extends SidetreeConfig {

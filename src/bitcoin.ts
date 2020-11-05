@@ -8,7 +8,9 @@ import {
   SidetreeBitcoinProcessor,
   SidetreeVersionModel
 } from '@decentralized-identity/sidetree';
-import { register } from 'prom-client';
+import { collectDefaultMetrics, register } from 'prom-client';
+
+collectDefaultMetrics();
 
 /** Bitcoin service configuration parameters */
 interface IBitcoinServiceConifg extends ISidetreeBitcoinConfig {
